@@ -7,8 +7,6 @@ import { useState } from "react";
 import Popup from "../components/popup/popup";
 import theme from "../themes/baseTheme";
 import Tooltip from "../components/tooltip/tooltip";
-import axios from "axios";
-import { useQuery } from "react-query";
 
 const languageSwitcher = {
   en: { nativeName: "English" },
@@ -19,18 +17,13 @@ const languageSwitcher = {
 const menuItems = [
   {
     to: "/",
-    icon: <FontAwesomeIcon icon={icon({ name: "list", style: "solid" })} />,
-    label: "browse",
+    icon: <FontAwesomeIcon icon={icon({ name: "search", style: "solid" })} />,
+    label: "search",
   },
   {
     to: "/favorites",
     icon: <FontAwesomeIcon icon={icon({ name: "star", style: "regular" })} />,
     label: "favorites",
-  },
-  {
-    to: "/search",
-    icon: <FontAwesomeIcon icon={icon({ name: "search", style: "solid" })} />,
-    label: "search",
   },
 ];
 
@@ -96,7 +89,7 @@ export default function Layout() {
 const StyledMain = styled.main`
   background-color: ${(props) => props.theme.color.background};
   color: ${(props) => props.theme.color.white};
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 const Header = styled.header`
@@ -183,7 +176,7 @@ export const MenuItem = styled(Link)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 33.33%;
+  width: 50%;
   position: relative;
   cursor: pointer;
   transition: all 200ms ease-in-out;

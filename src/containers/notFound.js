@@ -17,13 +17,12 @@ function NotFound() {
           <FontAwesomeIcon icon={solid("home")} />
         </div>
         <div className="label">{t("back_home")}</div>
-        <div className="underline" />
       </MenuItem>
     </Center>
   );
 }
 
-const Center = styled.div`
+export const Center = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
