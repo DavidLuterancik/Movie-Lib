@@ -145,15 +145,13 @@ const MovieDetails = styled.div`
 
 const MoviePoster = styled.div`
   width: 100%;
+  height: 256px;
   @media ${device.m} {
     width: ${(props) => (props.small ? "256px" : "512px")};
+    height: ${(props) => (props.skeleton ? "256px" : "100%")};
   }
-
-  height: ${(props) => (props.skeleton ? "256px" : "100%")};
   min-height: 256px;
-  height: 256px;
   overflow: hidden;
-
   img {
     width: 100%;
     height: 100%;
@@ -248,7 +246,7 @@ const MovieCardWrapper = styled.div`
     flex-direction: column;
     justify-content: space-between;
 
-    padding: 18px;
+    padding: 16px;
 
     @media ${device.m} {
       width: 100%;

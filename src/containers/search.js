@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { withTheme } from "@emotion/react";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { Input } from "antd";
+import { Button, Input, Spin } from "antd";
 import { useTranslation } from "react-i18next";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
@@ -18,24 +18,29 @@ const Search = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(null);
 
   const movies = useSelector((state) => state.search.movies);
 
-  const { data, isError } = useQuery(
-    ["movieData", debouncedSearchTerm],
+  const { data, isLoading, isError } = useQuery(
+    ["movieData", page, debouncedSearchTerm],
     async () => {
       if (debouncedSearchTerm.trim() === "") {
         return {};
       }
 
-      const apiUrl = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${debouncedSearchTerm}`;
+      const apiUrl = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${debouncedSearchTerm}&page=${page}`;
 
       try {
-        const response = await axios.get(apiUrl);
-        dispatch(setMovies(response.data.Search));
-        return response.data.Search;
+        const res = await axios.get(apiUrl);
+
+        dispatch(setMovies(res.data.Search));
+        setTotal(res.data.totalResults);
+
+        return res.data.Search;
       } catch (error) {
-        throw new Error("Failed to fetch data");
+        throw new Error(t("error_fetching_data"));
       }
     },
     {
@@ -57,19 +62,42 @@ const Search = () => {
     const { value } = e.target;
     setSearchTerm(value);
     dispatch(setMovieSearch(searchTerm));
+    setPage(1);
+    setTotal(null);
   };
 
   if (isError) {
     return <div>{t("error_fetching_data")}</div>;
   }
 
+  const totalPages = Math.ceil(total / 10);
+  const startIndex = (page - 1) * 10 + 1;
+  const endIndex = Math.min(startIndex + 9, total);
+
+  const handlePrevPageClick = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPageClick = () => {
+    setPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const renderPager = () => {
+    return (
+      <Pager>
+        <Button onClick={handlePrevPageClick}>{t("prev_page")}</Button>
+        <div>
+          {`${t("page")} ${page} - ${t(
+            "entries"
+          )} ${startIndex} - ${endIndex} ${t("out_of")} ${total}`}
+        </div>
+        <Button onClick={handleNextPageClick}>{t("next_page")}</Button>
+      </Pager>
+    );
+  };
+
   return (
     <div>
-      {console.log(
-        "Loaded translations:",
-        i18n.getResourceBundle("en", "translation")
-      )}
-
       <StyledInput
         type="search"
         value={searchTerm}
@@ -78,24 +106,48 @@ const Search = () => {
       />
 
       {data && Object.keys(data).length > 0 ? (
-        <StyledGrid>
-          {data.map((d, i) => {
-            return <MovieCard key={i} data={d} />;
-          })}
-        </StyledGrid>
+        <>
+          <StyledGrid>
+            {data.map((d, i) => {
+              return <MovieCard key={i} data={d} />;
+            })}
+          </StyledGrid>
+
+          {renderPager()}
+        </>
       ) : (
         <StyledGrid>
           {Array.from({ length: 9 }, (_, index) => (
             <MovieCard key={index} />
           ))}
           <div className="overlay">
-            {t("no_movies_found_change_the_search")}
+            {isLoading ? <Spin /> : t("no_movies_found_change_the_search")}
           </div>
         </StyledGrid>
       )}
     </div>
   );
 };
+
+const Pager = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 16px;
+  font-size: ${rem(12)};
+  @media ${device.m} {
+    margin-top: 32px;
+    font-size: ${rem(14)};
+  }
+
+  button {
+    background-color: ${(props) => props.theme.color.overlay};
+    border-color: ${(props) => props.theme.color.whiteTransparent75};
+    color: ${(props) => props.theme.color.white};
+  }
+`;
 
 export const MenuItem = styled(Link)`
   display: flex;
