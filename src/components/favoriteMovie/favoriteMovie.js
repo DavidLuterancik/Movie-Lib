@@ -20,7 +20,7 @@ const FavoriteMovie = ({ id }) => {
   const toggleFavorite = (id) => {
     if (isFavorite) {
       if (
-        window.confirm(`${t("Do you want to remove movie from favorites")}?`)
+        window.confirm(`${t("remove_favorite")}?`)
       ) {
         dispatch(removeFromFavorites(id));
       }
@@ -30,13 +30,11 @@ const FavoriteMovie = ({ id }) => {
   };
 
   return (
-    <div className="icon" onClick={() => toggleFavorite(id)}>
-      {isFavorite ? (
-        <FontAwesomeIcon icon={solid("star")} />
-      ) : (
-        <FontAwesomeIcon icon={regular("star")} />
-      )}
-    </div>
+    <FontAwesomeIcon
+      className="icon"
+      onClick={() => toggleFavorite(id)}
+      icon={isFavorite ? solid("star") : regular("star")}
+    />
   );
 };
 

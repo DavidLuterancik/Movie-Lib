@@ -7,6 +7,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+  margin: 0;
+  padding: 0;
+}
+
 ::-webkit-scrollbar {
   width: 2px; /* Width of the entire scrollbar */
 }

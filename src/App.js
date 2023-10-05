@@ -8,7 +8,7 @@ import Detail from "./containers/detail";
 export default function App() {
   return (
     <>
-      <Routes basename="/Movie-Lib/">
+      <Routes basename="/Movie-Lib">
         <Route path="/" element={<Layout />}>
           <Route index element={<Search />} />
           <Route path="favorites" element={<Favorites />} />

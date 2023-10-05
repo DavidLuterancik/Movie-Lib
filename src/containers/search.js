@@ -8,28 +8,34 @@ import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import MovieCard from "../components/movieCard/movieCard";
 import { useDispatch, useSelector } from "react-redux";
-import { setMovieSearch, setMovies } from "../reducers/searchReducer";
+import {
+  setMovieSearch,
+  setMovieTotal,
+  setMovies,
+} from "../reducers/searchReducer";
 import { rem } from "polished";
 import { device } from "../themes/baseTheme";
 
 const Search = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(null);
 
-  const movies = useSelector((state) => state.search.movies);
+  // const movies = useSelector((state) => state.search.movies);
+  const movieSearch = useSelector((state) => state.search.movieSearch);
+
+  const [searchTerm, setSearchTerm] = useState(movieSearch);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(movieSearch);
+
+  const moviePage = useSelector((state) => state.search.moviePage);
+  const movieTotal = useSelector((state) => state.search.movieTotal);
+
+  const [page, setPage] = useState(moviePage);
+  const [total, setTotal] = useState(movieTotal);
 
   const { data, isLoading, isError } = useQuery(
     ["movieData", page, debouncedSearchTerm],
     async () => {
-      if (debouncedSearchTerm.trim() === "") {
-        return {};
-      }
-
       const apiUrl = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${debouncedSearchTerm}&page=${page}`;
 
       try {
@@ -37,31 +43,29 @@ const Search = () => {
 
         dispatch(setMovies(res.data.Search));
         setTotal(res.data.totalResults);
+        setMovieTotal(res.data.totalResults);
 
         return res.data.Search;
       } catch (error) {
         throw new Error(t("error_fetching_data"));
       }
-    },
-    {
-      enabled: debouncedSearchTerm.trim() !== "",
     }
   );
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
+      dispatch(setMovieSearch(searchTerm));
     }, 800);
 
     return () => {
       clearTimeout(debounceTimer);
     };
-  }, [searchTerm]);
+  }, [searchTerm, dispatch]);
 
   const handleInputChange = (e) => {
     const { value } = e.target;
     setSearchTerm(value);
-    dispatch(setMovieSearch(searchTerm));
     setPage(1);
     setTotal(null);
   };
@@ -75,29 +79,30 @@ const Search = () => {
   const endIndex = Math.min(startIndex + 9, total);
 
   const handlePrevPageClick = () => {
-    setPage((prevPage) => Math.max(prevPage - 1, 1));
+    setPage(Math.max(page - 1, 1));
   };
 
   const handleNextPageClick = () => {
-    setPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    setPage(Math.min(page + 1, totalPages));
   };
 
   const renderPager = () => {
     return (
       <Pager>
-        <Button onClick={handlePrevPageClick}>{t("prev_page")}</Button>
-        <div>
+        <Button onClick={() => handlePrevPageClick()}>{t("prev_page")}</Button>
+        <p className="pager-info">
           {`${t("page")} ${page} - ${t(
             "entries"
           )} ${startIndex} - ${endIndex} ${t("out_of")} ${total}`}
-        </div>
-        <Button onClick={handleNextPageClick}>{t("next_page")}</Button>
+        </p>
+        <Button onClick={() => handleNextPageClick()}>{t("next_page")}</Button>
       </Pager>
     );
   };
 
   return (
     <div>
+      {console.log("render")}
       <StyledInput
         type="search"
         value={searchTerm}
@@ -136,10 +141,20 @@ const Pager = styled.div`
   align-items: center;
 
   margin-top: 16px;
-  font-size: ${rem(12)};
+  font-size: ${rem(10)};
+  color: ${(props) => props.theme.color.whiteTransparent75};
+
+  .pager-info {
+    display: none;
+  }
+
   @media ${device.m} {
     margin-top: 32px;
     font-size: ${rem(14)};
+
+    .pager-info {
+      display: flex;
+    }
   }
 
   button {

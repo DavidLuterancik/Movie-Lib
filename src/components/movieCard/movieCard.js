@@ -35,8 +35,8 @@ function getMovieDetails(data, t) {
     <div>
       {detailsData.map((item, index) => (
         <MovieDetails key={index}>
-          <div className="label">{item.label}</div>
-          <div className="value">{item.value}</div>
+          <p className="label">{item.label}</p>
+          <p className="value">{item.value}</p>
         </MovieDetails>
       ))}
     </div>
