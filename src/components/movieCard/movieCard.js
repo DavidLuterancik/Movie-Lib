@@ -1,34 +1,34 @@
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Spin } from "antd";
 import { styled, withTheme } from "styled-components";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import FavoriteMovie from "../favoriteMovie/favoriteMovie";
+import { device } from "../../themes/baseTheme";
 
 function getMovieDetails(data, t) {
   const detailsData = [
-    { label: t("Actors"), value: data.Actors },
-    { label: t("Awards"), value: data.Awards },
-    { label: t("Box Office"), value: data.BoxOffice },
-    { label: t("Country"), value: data.Country },
-    { label: t("DVD Release Date"), value: data.DVD },
-    { label: t("Director"), value: data.Director },
-    { label: t("Genre"), value: data.Genre },
-    { label: t("Language"), value: data.Language },
-    { label: t("Metascore"), value: data.Metascore },
-    { label: t("Production"), value: data.Production },
-    { label: t("Rated"), value: data.Rated },
-    { label: t("Released"), value: data.Released },
-    { label: t("Runtime"), value: data.Runtime },
-    { label: t("Type"), value: data.Type },
-    { label: t("Website"), value: data.Website },
-    { label: t("Writer"), value: data.Writer },
-    { label: t("Year"), value: data.Year },
-    { label: t("IMDb ID"), value: data.imdbID },
-    { label: t("IMDb Rating"), value: data.imdbRating },
-    { label: t("IMDb Votes"), value: data.imdbVotes },
-    { label: t("Plot"), value: data.Plot },
+    { label: t("actors"), value: data.Actors },
+    { label: t("awards"), value: data.Awards },
+    { label: t("box_office"), value: data.BoxOffice },
+    { label: t("country"), value: data.Country },
+    { label: t("released"), value: data.DVD },
+    { label: t("director"), value: data.Director },
+    { label: t("genre"), value: data.Genre },
+    { label: t("language"), value: data.Language },
+    { label: t("metascore"), value: data.Metascore },
+    { label: t("production"), value: data.Production },
+    { label: t("rated"), value: data.Rated },
+    { label: t("released"), value: data.Released },
+    { label: t("runtime"), value: data.Runtime },
+    { label: t("type"), value: data.Type },
+    { label: t("website"), value: data.Website },
+    { label: t("writer"), value: data.Writer },
+    { label: t("year"), value: data.Year },
+    { label: t("imdb_id"), value: data.imdbID },
+    { label: t("imdb_rating"), value: data.imdbRating },
+    { label: t("imdb_votes"), value: data.imdbVotes },
+    { label: t("plot"), value: data.Plot },
   ];
 
   return (
@@ -59,16 +59,17 @@ const MovieCard = ({ data: d, small = true }) => {
       <MovieTitle small={small}>
         <div className="text">{d.Title}</div>
 
-        <FavoriteMovie id={d.imdbID}/>
-
-       
-      
+        <FavoriteMovie id={d.imdbID} />
       </MovieTitle>
     );
   };
 
   if (!d) {
-    return <Spin />;
+    return (
+      <MovieCardWrapper small={small} skeleton={true}>
+        <MoviePoster small={small} skeleton={true} />
+      </MovieCardWrapper>
+    );
   }
 
   if (small) {
@@ -87,7 +88,7 @@ const MovieCard = ({ data: d, small = true }) => {
 
             <div className="link">
               <ShowDetail to={`/detail/${d.imdbID}`}>
-                <div className="label">{t("show info")}</div>
+                <div className="label">{t("show_info")}</div>
                 <div className="icon">
                   <FontAwesomeIcon icon={solid("arrow-right")} />
                 </div>
@@ -127,18 +128,30 @@ const MovieDetails = styled.div`
     margin-right: 8px;
     border-right: 1px solid ${(props) => props.theme.color.whiteTransparent75};
     text-align: right;
-    font-size: 14px;
+    font-size: 12px;
+    @media ${device.m} {
+      font-size: 14px;
+    }
   }
 
   .value {
     width: 80%;
-    font-size: 16px;
+    font-size: 14px;
+    @media ${device.m} {
+      font-size: 16px;
+    }
   }
 `;
 
 const MoviePoster = styled.div`
-  width: ${(props) => (props.small ? "256px" : "512px")};
-  height: 100%;
+  width: 100%;
+  @media ${device.m} {
+    width: ${(props) => (props.small ? "256px" : "512px")};
+  }
+
+  height: ${(props) => (props.skeleton ? "256px" : "100%")};
+  min-height: 256px;
+  height: 256px;
   overflow: hidden;
 
   img {
@@ -156,9 +169,14 @@ const MovieTitle = styled.div`
 
   .text {
     text-transform: uppercase;
-    font-size: ${(props) => (props.small ? "18px" : "32px")};
+
     font-weight: bold;
     margin-bottom: ${(props) => (props.small ? "8px" : "32px")};
+
+    font-size: 18px;
+    @media ${device.m} {
+      font-size: ${(props) => (props.small ? "18px" : "32px")};
+    }
   }
 
   .icon {
@@ -174,7 +192,12 @@ const ShowDetail = styled(Link)`
   align-items: baseline;
   cursor: pointer;
   transition: all 200ms ease-in-out;
-  font-size: 18px;
+
+  font-size: 12px;
+  @media ${device.m} {
+    font-size: 14px;
+  }
+
   color: ${(props) =>
     props.current
       ? props.theme.color.white
@@ -206,18 +229,30 @@ const ShowDetail = styled(Link)`
 
 const MovieCardWrapper = styled.div`
   display: flex;
-  width: 100%;
-  background-color: ${(props) => props.theme.color.backgroundLite};
+  flex-direction: column;
+  justify-content: center;
+
+  @media ${device.m} {
+    flex-direction: row;
+  }
+
+  background-color: ${(props) =>
+    props.skeleton
+      ? props.theme.color.backgroundSkeleton
+      : props.theme.color.backgroundLite};
   border-radius: 4px;
   overflow: hidden;
 
   .info {
     display: flex;
     flex-direction: column;
-    justify-content: ${(props) =>
-      props.small ? "space-between" : "flex-start"};
-    width: 100%;
-    padding: ${(props) => (props.small ? `18px` : "48px")};
+    justify-content: space-between;
+
+    padding: 18px;
+
+    @media ${device.m} {
+      width: 100%;
+    }
 
     .year {
       color: ${(props) => props.theme.color.whiteTransparent75};
@@ -231,9 +266,13 @@ const MovieCardWrapper = styled.div`
   }
 
   &:hover {
-    transition: all 400ms ease-in-out;
-    box-shadow: ${(props) => props.small && `black 0px 0px 64px 0px;`};
-    transform: ${(props) => props.small && `scale(1.1)`};
+    @media ${device.m} {
+      transition: all 400ms ease-in-out;
+      box-shadow: ${(props) =>
+        props.small && !props.skeleton && `black 0px 0px 64px 0px;`};
+
+      transform: ${(props) => props.small && !props.skeleton && `scale(1.1)`};
+    }
   }
 `;
 
@@ -243,6 +282,10 @@ const MovieCardFooter = styled.div`
   width: 100%;
   justify-content: space-between;
   align-items: flex-end;
+  font-size: 10px;
+  @media ${device.m} {
+    font-size: 14px;
+  }
 `;
 
 export default withTheme(MovieCard);

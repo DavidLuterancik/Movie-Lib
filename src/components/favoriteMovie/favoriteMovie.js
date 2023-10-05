@@ -7,16 +7,23 @@ import {
   addToFavorites,
   removeFromFavorites,
 } from "../../reducers/favoritesReducer";
+import { useTranslation } from "react-i18next";
 
 const FavoriteMovie = ({ id }) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.ids);
 
   const isFavorite = favorites.includes(id);
 
-  const toggleFavorite = () => {
+  const toggleFavorite = (id) => {
     if (isFavorite) {
-      dispatch(removeFromFavorites(id));
+      if (
+        window.confirm(`${t("Do you want to remove movie from favorites")}?`)
+      ) {
+        dispatch(removeFromFavorites(id));
+      }
     } else {
       dispatch(addToFavorites(id));
     }

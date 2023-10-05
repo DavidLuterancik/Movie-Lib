@@ -1,11 +1,9 @@
 import { combineReducers } from "redux";
-import counterReducer from "./counterReducer";
 import favoritesReducer from "./favoritesReducer";
-
-
+import searchReducer from "./searchReducer";
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
+  search: searchReducer,
   favorites: favoritesReducer
 });
 

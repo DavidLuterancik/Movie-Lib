@@ -8,10 +8,10 @@ const sizes = {
 };
 
 export const device = {
-  xl: `(min-width: ${sizes.xl})`,
-  l: `(min-width: ${sizes.l})`,
-  m: `(min-width: ${sizes.m})`,
-  s: `(min-width: ${sizes.s})`,
+  xl: `(min-width: ${sizes.xl}px)`,
+  l: `(min-width: ${sizes.l}px)`,
+  m: `(min-width: ${sizes.m}px)`,
+  s: `(min-width: ${sizes.s}px)`,
 };
 
 const color = {
@@ -19,6 +19,7 @@ const color = {
   whiteTransparent75: rgba(255, 255, 255, 0.75),
   background: "#141414",
   backgroundLite: rgba(32, 32, 32, 1),
+  backgroundSkeleton: rgba(32, 32, 32, 0.3),
   overlay: rgba(20, 20, 20, 0.75),
 };
 

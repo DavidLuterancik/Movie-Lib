@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { rem } from "polished";
 import { useEffect, useRef } from "react";
 import { styled } from "styled-components";
+import { device } from "../../themes/baseTheme";
 
 const Popup = ({ show, onClose, children, title }) => {
   const handleCloseClick = (e) => {
@@ -64,8 +65,14 @@ const StyledModalTitle = styled.div`
 `;
 
 const StyledModalBody = styled.div`
-  width: 50vw;
+  width: 80vw;
   height: 50vh;
+
+  @media ${device.m} {
+    width: 50vw;
+    height: 50vh;
+  }
+
   cursor: default;
 `;
 
@@ -80,11 +87,11 @@ const StyledModalHeader = styled.div`
 const StyledModal = styled.div`
   background: ${(props) => props.theme.color.backgroundLite};
   border-radius: ${rem(8)};
+  margin-top: 15%;
 `;
 
 const StyledModalOverlay = styled.div`
   overflow: hidden;
-  padding: ${rem(24)};
   display: flex;
   position: fixed;
   top: 0;
@@ -109,6 +116,6 @@ const StyledModalOverlay = styled.div`
 
 const CloseIcon = styled.div`
   cursor: pointer;
-`
+`;
 
 export default withTheme(Popup);

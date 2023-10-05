@@ -5,13 +5,13 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Popup from "../components/popup/popup";
-import theme from "../themes/baseTheme";
+import theme, { device } from "../themes/baseTheme";
 import Tooltip from "../components/tooltip/tooltip";
+import { rem } from "polished";
 
 const languageSwitcher = {
   en: { nativeName: "English" },
   sk: { nativeName: "Slovensky" },
-  cs: { nativeName: "Česky" },
 };
 
 const menuItems = [
@@ -138,7 +138,7 @@ const LangSwitchLang = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 33.33%;
+  width: 50%;
   height: 100%;
 
   transition: all 200ms ease-in-out;
@@ -160,7 +160,11 @@ const LangSwitchLang = styled.button`
 `;
 
 const OutletWrapper = styled.div`
-  padding: 48px;
+  padding: 16px;
+
+  @media ${device.m} {
+    padding: 48px;
+  }
 `;
 
 const Nav = styled.nav`
@@ -180,7 +184,10 @@ export const MenuItem = styled(Link)`
   position: relative;
   cursor: pointer;
   transition: all 200ms ease-in-out;
-  font-size: 14px;
+  font-size: ${rem(14)};
+  @media ${device.m} {
+    font-size: ${rem(16)};
+  }
   color: ${(props) =>
     props.current
       ? props.theme.color.white
@@ -194,11 +201,7 @@ export const MenuItem = styled(Link)`
     opacity: 0;
     padding-right: 0px;
   }
-
-  .label {
-    text-transform: capitalize;
-  }
-
+  
   .underline {
     transition: all 400ms ease-in-out;
     position: absolute;
