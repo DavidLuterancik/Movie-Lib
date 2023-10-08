@@ -4,6 +4,8 @@ Assessment to create a simple movie application in React.
 
 The application uses an OMDb API, to search for movies, view the detail and persist the favorite movies on client side.
 
+https://davidluterancik.github.io/Movie-Lib/
+
 # Commands:
 
 ### `yarn start`
