@@ -55,7 +55,8 @@ i18n
           entries: "Entries",
           out_of: "out of",
           next_page: "Next Page",
-          remove_favorite: "Remove from favorites"
+          remove_favorite: "Remove from favorites",
+          add_to_favorite: "Add to favorite"
         },
       },
       sk: {
@@ -99,7 +100,8 @@ i18n
           entries: "Záznamy",
           out_of: "z",
           next_page: "Ďalšia stránka",
-          remove_favorite: "Odstrániť z obľúbených"
+          remove_favorite: "Odstrániť z obľúbených",
+          add_to_favorite: "Pridať k obľúbeným"
         },
       },
     },

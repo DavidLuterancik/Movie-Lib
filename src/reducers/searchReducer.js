@@ -3,27 +3,28 @@ import { createSlice } from "@reduxjs/toolkit";
 const searchSlice = createSlice({
   name: "search",
   initialState: {
-    movieSearch: "",
-    movies: [],
-    moviePage: 1,
-    movieTotal: null,
+    searchTerm: "",
+    data: [],
+    page: 1,
+    total: null,
+    scroll: 0,
   },
   reducers: {
-    setMovieSearch: (state, action) => {
-      state.movieSearch = action.payload;
+    setStateSearchTerm: (state, action) => {
+      state.searchTerm = action.payload;
     },
-    setMovies: (state, action) => {
-      state.movies = action.payload;
+    setStateData: (state, action) => {
+      state.data = action.payload;
     },
-    setMoviePage: (state, action) => {
-      state.moviePage = action.payload;
+    setStatePage: (state, action) => {
+      state.page = action.payload;
     },
-    setMovieTotal: (state, action) => {
-      state.movieTotal = action.payload;
+    setStateTotal: (state, action) => {
+      state.total = action.payload;
     },
   },
 });
 
-export const { setMovieSearch, setMovies, setMoviePage, setMovieTotal } =
+export const { setStateData, setStateSearchTerm, setStatePage, setStateTotal } =
   searchSlice.actions;
 export default searchSlice.reducer;

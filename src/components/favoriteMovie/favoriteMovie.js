@@ -8,6 +8,7 @@ import {
   removeFromFavorites,
 } from "../../reducers/favoritesReducer";
 import { useTranslation } from "react-i18next";
+import Tippy from "@tippyjs/react";
 
 const FavoriteMovie = ({ id }) => {
   const { t } = useTranslation();
@@ -19,9 +20,7 @@ const FavoriteMovie = ({ id }) => {
 
   const toggleFavorite = (id) => {
     if (isFavorite) {
-      if (
-        window.confirm(`${t("remove_favorite")}?`)
-      ) {
+      if (window.confirm(`${t("remove_favorite")}?`)) {
         dispatch(removeFromFavorites(id));
       }
     } else {
@@ -30,11 +29,14 @@ const FavoriteMovie = ({ id }) => {
   };
 
   return (
-    <FontAwesomeIcon
-      className="icon"
-      onClick={() => toggleFavorite(id)}
-      icon={isFavorite ? solid("star") : regular("star")}
-    />
+    <Tippy content={t("add_to_favorite")}>
+      <FontAwesomeIcon
+        size="xl"
+        className="icon"
+        onClick={() => toggleFavorite(id)}
+        icon={isFavorite ? solid("star") : regular("star")}
+      />
+    </Tippy>
   );
 };
 

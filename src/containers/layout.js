@@ -201,7 +201,7 @@ export const MenuItem = styled(Link)`
     opacity: 0;
     padding-right: 0px;
   }
-  
+
   .underline {
     transition: all 400ms ease-in-out;
     position: absolute;

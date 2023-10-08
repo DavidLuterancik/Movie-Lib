@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { withTheme } from "styled-components";
-import MovieCard from "../components/movieCard/movieCard";
+import MovieCardDetail from "../components/movieCardDetail/movieCardDetail";
 
 const Detail = () => {
   const { id } = useParams();
@@ -24,7 +24,7 @@ const Detail = () => {
     fetchData();
   }, [id]);
 
-  return <MovieCard data={data} small={false} />;
+  return <MovieCardDetail data={data} />;
 };
 
 export default withTheme(Detail);

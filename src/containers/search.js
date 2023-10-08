@@ -1,67 +1,67 @@
 import React, { useState, useEffect } from "react";
 import { withTheme } from "@emotion/react";
 import axios from "axios";
-import { useQuery } from "react-query";
 import { Button, Input, Spin } from "antd";
 import { useTranslation } from "react-i18next";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import MovieCard from "../components/movieCard/movieCard";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setMovieSearch,
-  setMovieTotal,
-  setMovies,
-} from "../reducers/searchReducer";
+
 import { rem } from "polished";
 import { device } from "../themes/baseTheme";
+import {
+  setStateData,
+  setStatePage,
+  setStateSearchTerm,
+  setStateTotal,
+} from "../reducers/searchReducer";
 
 const Search = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
 
-  // const movies = useSelector((state) => state.search.movies);
-  const movieSearch = useSelector((state) => state.search.movieSearch);
+  const prevSearchTerm = useSelector((state) => state.search.searchTerm);
+  const prevPage = useSelector((state) => state.search.page);
 
-  const [searchTerm, setSearchTerm] = useState(movieSearch);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(movieSearch);
-
-  const moviePage = useSelector((state) => state.search.moviePage);
-  const movieTotal = useSelector((state) => state.search.movieTotal);
-
-  const [page, setPage] = useState(moviePage);
-  const [total, setTotal] = useState(movieTotal);
-
-  const { data, isLoading, isError } = useQuery(
-    ["movieData", page, debouncedSearchTerm],
-    async () => {
-      const apiUrl = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${debouncedSearchTerm}&page=${page}`;
-
-      try {
-        const res = await axios.get(apiUrl);
-
-        dispatch(setMovies(res.data.Search));
-        setTotal(res.data.totalResults);
-        setMovieTotal(res.data.totalResults);
-
-        return res.data.Search;
-      } catch (error) {
-        throw new Error(t("error_fetching_data"));
-      }
-    }
+  const [searchTerm, setSearchTerm] = useState(prevSearchTerm);
+  const [data, setData] = useState(useSelector((state) => state.search.data));
+  const [page, setPage] = useState(useSelector((state) => state.search.page));
+  const [total, setTotal] = useState(
+    useSelector((state) => state.search.total)
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      dispatch(setMovieSearch(searchTerm));
-    }, 800);
+    if (searchTerm !== prevSearchTerm || page !== prevPage) {
+      const fetchData = async () => {
+        setIsLoading(true);
+        setIsError(false);
 
-    return () => {
-      clearTimeout(debounceTimer);
-    };
-  }, [searchTerm, dispatch]);
+        const apiUrl = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${searchTerm}&page=${page}`;
+
+        try {
+          const res = await axios.get(apiUrl);
+          setTotal(res.data.totalResults);
+          setData(res.data.Search);
+
+          dispatch(setStateData(res.data.Search));
+          dispatch(setStateSearchTerm(searchTerm));
+          dispatch(setStateTotal(res.data.totalResults));
+          dispatch(setStatePage(page));
+
+          setIsLoading(false);
+        } catch (error) {
+          setIsError(true);
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [dispatch, page, searchTerm, prevSearchTerm, prevPage]);
 
   const handleInputChange = (e) => {
     const { value } = e.target;
@@ -70,20 +70,25 @@ const Search = () => {
     setTotal(null);
   };
 
-  if (isError) {
-    return <div>{t("error_fetching_data")}</div>;
-  }
-
   const totalPages = Math.ceil(total / 10);
   const startIndex = (page - 1) * 10 + 1;
   const endIndex = Math.min(startIndex + 9, total);
 
   const handlePrevPageClick = () => {
     setPage(Math.max(page - 1, 1));
+    scrollTo();
   };
 
   const handleNextPageClick = () => {
     setPage(Math.min(page + 1, totalPages));
+    scrollTo();
+  };
+
+  const scrollTo = (top = 0) => {
+    window.scrollTo({
+      top,
+      behavior: "smooth",
+    });
   };
 
   const renderPager = () => {
@@ -91,18 +96,21 @@ const Search = () => {
       <Pager>
         <Button onClick={() => handlePrevPageClick()}>{t("prev_page")}</Button>
         <p className="pager-info">
-          {`${t("page")} ${page} - ${t(
-            "entries"
-          )} ${startIndex} - ${endIndex} ${t("out_of")} ${total}`}
+          {`${t("page")} ${page} - ${startIndex}/${endIndex} ${t(
+            "out_of"
+          )} ${total}`}
         </p>
         <Button onClick={() => handleNextPageClick()}>{t("next_page")}</Button>
       </Pager>
     );
   };
 
+  if (isError) {
+    return <div>{t("error_fetching_data")}</div>;
+  }
+
   return (
     <div>
-      {console.log("render")}
       <StyledInput
         type="search"
         value={searchTerm}
@@ -114,25 +122,55 @@ const Search = () => {
         <>
           <StyledGrid>
             {data.map((d, i) => {
-              return <MovieCard key={i} data={d} />;
+              return <MovieCard isLoading={isLoading} key={i} data={d} />;
             })}
           </StyledGrid>
 
           {renderPager()}
         </>
       ) : (
-        <StyledGrid>
-          {Array.from({ length: 9 }, (_, index) => (
-            <MovieCard key={index} />
-          ))}
-          <div className="overlay">
-            {isLoading ? <Spin /> : t("no_movies_found_change_the_search")}
-          </div>
-        </StyledGrid>
+        <>
+          <GridMobile>
+            <StyledGrid>
+              {Array.from({ length: 3 }, (_, index) => (
+                <MovieCard key={index} />
+              ))}
+              <div className="overlay">
+                {isLoading ? <Spin /> : t("no_movies_found_change_the_search")}
+              </div>
+            </StyledGrid>
+          </GridMobile>
+          <GridDesktop>
+            <StyledGrid>
+              {Array.from({ length: 9 }, (_, index) => (
+                <MovieCard key={index} />
+              ))}
+              <div className="overlay">
+                {isLoading ? <Spin /> : t("no_movies_found_change_the_search")}
+              </div>
+            </StyledGrid>
+          </GridDesktop>
+        </>
       )}
     </div>
   );
 };
+
+export const GridMobile = styled.div`
+  display: block;
+
+  @media ${device.m} {
+    display: none;
+  }
+`;
+
+export const GridDesktop = styled.div`
+  display: none;
+
+  @media ${device.m} {
+    display: block;
+  }
+`;
 
 const Pager = styled.div`
   display: flex;
@@ -154,6 +192,8 @@ const Pager = styled.div`
 
     .pager-info {
       display: flex;
+      color: ${(props) => props.theme.color.whiteTransparent75};
+      opacity: 0.5;
     }
   }
 
@@ -237,7 +277,7 @@ export const StyledGrid = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media ${device.l} {
+  @media ${device.xl} {
     grid-template-columns: repeat(3, 1fr);
   }
 
