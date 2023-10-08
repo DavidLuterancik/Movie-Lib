@@ -1,6 +1,10 @@
-# Getting Started with Create React App
+# Info:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Assessment to create a simple movie application in React.
+
+The application uses an OMDb API, to search for movies, view the detail and persist the favorite movies on client side.
+
+# Commands:
 
 ### `yarn start`
 
