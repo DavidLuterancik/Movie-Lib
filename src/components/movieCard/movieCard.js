@@ -51,7 +51,9 @@ const MovieCard = ({ data: d, small = true, isLoading }) => {
 
   return (
     <MovieCardWrapper small={small}>
-      <Link to={`/detail/${d.imdbID}`}>{getPoster()}</Link>
+      <Link className="link" to={`/detail/${d.imdbID}`}>
+        {getPoster()}
+      </Link>
 
       <div className="info">
         {getTitle()}
@@ -84,7 +86,6 @@ const MoviePoster = styled.div`
   overflow: hidden;
   color: white;
   font-size: 10px;
-  text-decoration: none;
 
   @media ${device.m} {
     width: 256px;
@@ -212,6 +213,10 @@ const MovieCardWrapper = styled.div`
 
       transform: ${(props) => props.small && !props.skeleton && `scale(1.1)`};
     }
+  }
+
+  .link {
+    text-decoration: none;
   }
 `;
 
